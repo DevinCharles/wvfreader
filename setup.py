@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="wvfreader",
-    version="0.1.2",
+    version="0.1.3",
     author="Devin Prescott",
     author_email="devincprescott@gmail.com",
     description="A package for working with Yokogowa oscilloscope files (WDF, WVF).",
@@ -20,5 +20,6 @@ setup(
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
     ),
+    install_requires=['numpy'],
     keywords='Yokogowa Oscilloscope WVF WDF',
 )

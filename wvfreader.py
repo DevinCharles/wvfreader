@@ -7,6 +7,7 @@ from pathlib import Path
 # For DataFile Class
 import re
 import numpy as np
+from os.path import splitext
 from os.path import split as pathsplit
 from os.path import join as pathjoin
 from os.path import expanduser
@@ -104,12 +105,10 @@ def datafile(filenames=None):
     if isinstance(filenames,str):
         filenames = [filenames]
     
-    if filenames[0].split('.')[1].lower() == 'wdf':
-        [wdf2wvf(filename) for filename in filenames if filename.split('.')[1].lower() == 'wdf']
+    if any([(splitext(filename)[1].lower() == 'wvf') | (splitext(filename)[1].lower() == 'wdf') for filename in filenames]):
+        [wdf2wvf(filename) for filename in filenames if splitext(filename)[1].lower() == 'wdf']
         return IndexableDict({pathsplit(filename)[1].split('.')[0]:DataFile(filename) for filename in filenames})
-    elif filenames[0].split('.')[1].lower() == 'wvf':
-        return IndexableDict({pathsplit(filename)[1].split('.')[0]:DataFile(filename) for filename in filenames})
-    else:
+    if ('hdf' in splitext(filenames[0]).lower) | ('h5' in splitext(filenames[0]).lower) :
         return read_hdf5(filenames)
 
 # Read from generated HDF5 File
