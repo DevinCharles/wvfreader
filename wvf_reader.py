@@ -178,6 +178,16 @@ class IndexableDict(OrderedDict):
     def __getitem__(self,key):
         if isinstance(key,int) | isinstance(key,slice):
             return list(self.values())[key]
+        if isinstance(key,list):
+            keys = key
+            out = []
+            for key in keys:
+                if isinstance(key,str):
+                    try:
+                        out.append([v for k,v in self.items() if k.lower().replace(' ','_')==key.lower().replace(' ','_')][0])
+                    except IndexError:
+                        raise Exception('Key '+key+' does not exist.\nAvailable Keys:\n'+'\n'.join([k for k in self.keys()]))
+            return out
         elif isinstance(key,str):
             try:
                 return [v for k,v in self.items() if k.lower().replace(' ','_')==key.lower().replace(' ','_')][0]
