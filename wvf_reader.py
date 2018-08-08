@@ -436,7 +436,7 @@ class Trace():
         
         return t,y
     
-    def plot(self,block=None,output='screen'):
+    def plot(self,block=None,output='screen',t_ind=None):
         ### SETUP ###
         if block is None:
             t = self.t
@@ -449,6 +449,12 @@ class Trace():
                 legend = ['Block '+ str(block)]
             else:
                 legend = ['Block '+ str(num) for num in block]
+        
+        if t_ind != None:
+            y = y[(t>=t_ind[0])&(t<=t_ind[1])]
+            t = t[(t>=t_ind[0])&(t<=t_ind[1])]
+            
+                
         title = '/'+self.parent.name+'/'+self.attrs['name']
         x_label = 'Time [' + self.attrs['x_unit'] + ']'
         y_label = self.attrs['name']+ ' [' + self.attrs['y_unit'] + ']'
@@ -465,9 +471,10 @@ class Trace():
             t = t[:,0]
             y = y[:,0]
             
-            if len(t) > 15000:
-                t = np.linspace(t[0],t[-1],15000)
-                y = resample(y,15000)
+            resample_size = int(15e3)
+            if len(t) > resample_size:
+                t = np.linspace(t[0],t[-1],resample_size)
+                y = resample(y,resample_size)
                 title = title + '\tResampled at ~'+str(int(round(1/np.mean(np.diff(t)))))+'Hz'
             
             plot = figure(
