@@ -15,6 +15,28 @@ import atexit
 
 ## Functions
 
+# Conversion from WDF to WVF
+def wdf2wvf(string,exe_loc=''):
+    # Download converter from:
+    #   https://y-link.yokogawa.com/YL008/?V_ope_type=Show&Download_id=DL00002358&Language_id=EN
+    
+    #Pass a custom location WDF2WVF location in exe_loc
+    import os
+    from sys import exc_info
+    if (exe_loc == ''):
+        exe_loc = r'wvf_reader\WDF2WVF\EXE\WDFCon.exe'
+        
+    if not os.path.exists(exe_loc):
+        raise FileExistsError(exe_loc)
+        
+    if os.path.isdir(string):
+        for filename in os.listdir(string):
+            os.system(exe_loc + ' "' + os.path.join(string,filename)+'"')
+    elif os.path.exists(string):
+        os.system(exe_loc + ' "' + string + '"')
+    else:
+        raise FileExistsError('No such file or folder ' + string)
+
 # Handles closing open HDF5 Files on exit
 open_files = []
 
@@ -72,9 +94,8 @@ def datafile(filenames=None):
     if filenames is None:
         options = {
         'defaultextension':'.WVF',
-        'filetypes' : [('Yokogowa Data File', '.WVF'),('Hierarchical Data Format (HDF5)', '.hdf5')],
+        'filetypes' : [('Yokogowa Data File', ('*.WDF','*.WVF')),('Hierarchical Data Format (HDF5)', '.hdf5')],
         'initialdir' : str(Path.home()),
-        'initialfile' : '*.WVF',
         'title' : 'Pick WVF or HDF5 files to load'
         }
         filenames = tkWindow(askopenfilenames,options)
@@ -82,7 +103,10 @@ def datafile(filenames=None):
     if isinstance(filenames,str):
         filenames = [filenames]
     
-    if filenames[0].split('.')[1].lower() == 'wvf':
+    if filenames[0].split('.')[1].lower() == 'wdf':
+        [wdf2wvf(filename) for filename in filenames if filename.split('.')[1].lower() == 'wdf']
+        return IndexableDict({pathsplit(filename)[1].split('.')[0]:DataFile(filename) for filename in filenames})
+    elif filenames[0].split('.')[1].lower() == 'wvf':
         return IndexableDict({pathsplit(filename)[1].split('.')[0]:DataFile(filename) for filename in filenames})
     else:
         return read_hdf5(filenames)
