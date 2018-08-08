@@ -9,6 +9,7 @@ import re
 import numpy as np
 from os.path import split as pathsplit
 from os.path import join as pathjoin
+from os.path import expanduser
 from struct import unpack
 from collections import OrderedDict
 import atexit
@@ -17,16 +18,16 @@ import atexit
 
 # Conversion from WDF to WVF
 def wdf2wvf(string,exe_loc=''):
-    # Download converter from:
+    # Download converter from and place in your home directory:
     #   https://y-link.yokogawa.com/YL008/?V_ope_type=Show&Download_id=DL00002358&Language_id=EN
-    
-    #Pass a custom location WDF2WVF location in exe_loc
+    # You may also pass a custom location WDF2WVF location in exe_loc
     import os
     from sys import exc_info
     if (exe_loc == ''):
-        exe_loc = r'wvf_reader\WDF2WVF\EXE\WDFCon.exe'
+        exe_loc = expanduser('~')+'/WDF2WVF/EXE/WDFCon.exe'
         
     if not os.path.exists(exe_loc):
+        print('You are missing WDF2WVF (https://y-link.yokogawa.com/YL008/?V_ope_type=Show&Download_id=DL00002358&Language_id=EN), please install it to your home path as %HOMEPATH%/WDF2WVF/EXE/WDFCon.exe')
         raise FileExistsError(exe_loc)
         
     if os.path.isdir(string):
@@ -441,7 +442,10 @@ class Trace():
         if block is None:
             t = self.t
             y = self.y
-            legend = ['Block '+ str(num) for num in range(0,self.parent.number_of_blocks)]
+            if self.parent.number_of_blocks >= 2:
+                legend = ['Block '+ str(num) for num in range(0,self.parent.number_of_blocks)]
+            else:
+                legend = ['/'+self.parent.name+'/'+self.attrs['name']]
         else:
             t = self.t[:,block]
             y = self.y[:,block]
@@ -500,8 +504,15 @@ class Trace():
         ### MATPLOTLIB ###
         else:
             from matplotlib import pyplot as plt
+            try:
+                cur_leg = [leg._text for leg in plt.gca().legend_.texts]
+            except AttributeError:
+                cur_leg = []
+            
+            cur_leg.extend(legend)
+            
             plt.plot(t,y)
-            plt.legend(legend)
+            plt.legend(cur_leg)
             plt.title(title)
             plt.xlabel(x_label)
             plt.ylabel(y_label)

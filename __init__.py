@@ -1,1 +1,1 @@
-name = "wvf_reader"
+name = "wvfreader"
