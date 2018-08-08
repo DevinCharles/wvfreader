@@ -1,12 +1,12 @@
-# wvf_reader
+# wvfreader
 Yokogowa Oscilloscope WVF file reader with basic plotting function
 
 # Example Usage
 ```
-import wvf_reader
+import wvfreader
 
 # Get Some Data
-datafiles = wvf_reader.datafile()
+datafiles = wvfreader.datafile()
 
 # Get some info on the first file
 datafiles[0].info()
