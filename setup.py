@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="wvfreader",
-    version="0.1.1",
+    version="0.1.2",
     author="Devin Prescott",
     author_email="devincprescott@gmail.com",
     description="A package for working with Yokogowa oscilloscope files (WDF, WVF).",
