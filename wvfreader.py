@@ -216,7 +216,7 @@ class DataFile():
     
     def read_hdr(self):
         # Make sure we're looking at the HDR file
-        filename = self.filename.split('.')[0] + '.HDR'
+        filename = splitext(self.filename)[0] + '.HDR'
         data = Dict()
         main_key = None
         
@@ -425,7 +425,7 @@ class Trace():
         y_gain = trace_info['y_gain']
         y_offset = trace_info['y_offset']
         
-        with open(self.parent.filename.split('.')[0]+'.WVF','rb') as file:
+        with open(splitext(self.parent.filename)[0]+'.WVF','rb') as file:
             y = np.empty((block_size,number_of_blocks))
             for block_number in range(0,number_of_blocks):
                 file.seek((trace_number*number_of_blocks + block_number)*(num_bytes*block_size) + data_offset)
